@@ -59,3 +59,36 @@ with DAG('my_dag', default_args=default_args) as dag:
     task3 = BashOperator(task_id='task3', bash_command='echo "Task 3"')
     task1 >> task2
     task1 >> task3
+```
+```
+## Postgresql - airflow.cfg
+CREATE DATABASE airflow;
+CREATE USER airflow_user WITH PASSWORD 'airflow';
+GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
+
+## Systemd for Airflow service.
+```
+root@dev ~ # cat /etc/systemd/system/airflow.service
+[Unit]
+Description=Start ProbandConnection App
+
+[Service]
+Type=forking
+WorkingDirectory=/root/airflow
+ExecStart=/usr/local/bin/airflow.sh
+
+[Install]
+WantedBy=multi-user.target
+
+ cat /usr/local/bin/airflow.sh
+#!/usr/bin/env bash
+source bin/activate
+nohup /root/airflow/bin/airflow webserver -p 8080 &
+nohup /root/airflow/bin/airflow scheduler &
+```
+## Connecting to Postgresql
+```
+Find the [core] section in the airflow.cfg file and set the following values:
+executor = SequentialExecutor  # Or choose the executor you prefer
+sql_alchemy_conn = postgresql+psycopg2://airflow_user:your_password@localhost/airflow
+```
