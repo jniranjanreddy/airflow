@@ -9,9 +9,6 @@
 
 yum install postgresql16-devel
 pip3 install psycopg2
-
-
-
 ```
 
 
@@ -80,10 +77,11 @@ with DAG('my_dag', default_args=default_args) as dag:
 ```
 ```
 ## Postgresql - airflow.cfg
+```
 CREATE DATABASE airflow;
 CREATE USER airflow WITH PASSWORD 'airflow';
 GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
-
+```
 ## Systemd for Airflow service.
 ```
 root@dev ~ # cat /etc/systemd/system/airflow.service
