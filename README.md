@@ -1,7 +1,23 @@
 # airflow
 ## Source: https://medium.com/orchestras-data-release-pipeline-blog/installing-and-configuring-apache-airflow-a-step-by-step-guide-5ff602c47a36
 ## https://www.youtube.com/watch?v=K9AnJ9_ZAXE
+
+## Postgresql if needed
+```
 ## Postgresql - https://www.snowdba.com/postgresql-install-rhel-8/
+
+
+yum install postgresql16-devel
+pip3 install psycopg2
+
+
+
+```
+
+
+
+
+
 ```
 How to install airflow in Redhat 8
 
@@ -31,7 +47,8 @@ airflow webserver -p 8080
 airflow db init
 
 
-## Creating user..
+## Creating user
+
 airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
 ```
 ## DAG
@@ -64,7 +81,7 @@ with DAG('my_dag', default_args=default_args) as dag:
 ```
 ## Postgresql - airflow.cfg
 CREATE DATABASE airflow;
-CREATE USER airflow_user WITH PASSWORD 'airflow';
+CREATE USER airflow WITH PASSWORD 'airflow';
 GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
 
 ## Systemd for Airflow service.
