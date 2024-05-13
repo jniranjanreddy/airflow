@@ -1,6 +1,7 @@
 # airflow
 ## Source: https://medium.com/orchestras-data-release-pipeline-blog/installing-and-configuring-apache-airflow-a-step-by-step-guide-5ff602c47a36
 ## https://www.youtube.com/watch?v=K9AnJ9_ZAXE
+## Postgresql - https://www.snowdba.com/postgresql-install-rhel-8/
 ```
 How to install airflow in Redhat 8
 
