@@ -86,7 +86,7 @@ GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
 ```
 root@dev ~ # cat /etc/systemd/system/airflow.service
 [Unit]
-Description=Start ProbandConnection App
+Description=Start  App
 
 [Service]
 Type=forking
