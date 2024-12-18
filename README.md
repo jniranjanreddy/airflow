@@ -47,8 +47,8 @@ airflow db init
 
 ## Creating user
 ```
-airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
-```
+# airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
+
 ## DAG
 ## Example 1: Defining a Simple DAG
 ```
