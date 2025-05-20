@@ -109,3 +109,44 @@ Find the [core] section in the airflow.cfg file and set the following values:
 executor = SequentialExecutor  # Or choose the executor you prefer
 sql_alchemy_conn = postgresql+psycopg2://airflow_user:your_password@localhost/airflow
 ```
+
+
+
+
+
+
+
+
+
+
+## Latest upadtes..
+```
+root@development-vm:/airflow-data/dev-data-services/airflow# cat /etc/systemd/system/airflow_all.service
+[Unit]
+Description=Start Airflow services webserver and scheduler
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/sysconfig/airflow
+Type=forking
+WorkingDirectory=/airflow-data/azureuser/dev-data-services/airflow
+User=azureuser
+ExecStart=/usr/bin/bash -c "/airflow-data/azureuser/dev-data-services/airflow_start.sh"
+Restart=on-failure
+RestartSec=5s
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+root@development-vm:/airflow-data/dev-data-services/airflow# cat /airflow-data/azureuser/dev-data-services/airflow_start.sh
+nohup /opt/pysetup/.venv/bin/airflow webserver -p 8081 &
+nohup /opt/pysetup/.venv/bin/airflow scheduler &
+nohup /opt/pysetup/.venv/bin/airflow triggerer &
+nohup /opt/pysetup/.venv/bin/airflow celery worker &
+nohup /opt/pysetup/.venv/bin/airflow celery flower &
+
+
+```
