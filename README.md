@@ -150,3 +150,6 @@ nohup /opt/pysetup/.venv/bin/airflow celery flower &
 
 
 ```
+```
+airflow info # this command will all teh details of airflow.
+```
