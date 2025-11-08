@@ -2,7 +2,7 @@
 ## Source: https://medium.com/orchestras-data-release-pipeline-blog/installing-and-configuring-apache-airflow-a-step-by-step-guide-5ff602c47a36
 ## https://www.youtube.com/watch?v=K9AnJ9_ZAXE
 ## https://www.youtube.com/watch?v=K9AnJ9_ZAXE&list=PLwFJcsJ61oujAqYpMp1kdUBcPG0sE0QMT
-
+## https://www.youtube.com/watch?v=ueo__msW2Os
 ## Postgresql if needed
 ```
 ## Postgresql - https://www.snowdba.com/postgresql-install-rhel-8/
