@@ -24,14 +24,19 @@ kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- \
 
 
 
+SCHEDULER_POD=$(kubectl get pods -n airflow -l component=scheduler -o jsonpath='{.items[0].metadata.name}')
 
+# Check the synced files
+kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- ls -la /opt/airflow/dags/repo/dags/
 
+# List DAGs
+kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- airflow dags list
 
-kubectl get secret airflow-metadata -n airflow -o jsonpath='{.data.connection}' | base64 --decode && echo
-postgresql://postgres:postgres@airflow-postgresql.airflow:5432/postgres?sslmode=disable
+# to check logs
+kubectl logs $SCHEDULER_POD -n airflow -c git-sync --tail=20
 
+kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- airflow dags reserialize
 
-
-
-
+# List DAGs
+kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- airflow dags list
 ```
