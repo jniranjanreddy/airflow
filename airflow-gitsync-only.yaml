@@ -1,0 +1,39 @@
+# =============================================================================
+# Git Sync ONLY - For Existing Airflow Clusters
+# =============================================================================
+# This file ONLY adds Git Sync to an existing Airflow deployment.
+# It does NOT change any other settings (PostgreSQL, resources, etc.)
+#
+# Usage:
+#   helm upgrade airflow apache-airflow/airflow -n airflow -f airflow-gitsync-only.yaml
+#
+# Prerequisites:
+#   1. Create git credentials secret first:
+#      kubectl create secret generic git-credentials -n airflow \
+#        --from-literal=GITSYNC_USERNAME=your-username \
+#        --from-literal=GITSYNC_PASSWORD=your-github-pat-token \
+#        --from-literal=GIT_SYNC_USERNAME=your-username \
+#        --from-literal=GIT_SYNC_PASSWORD=your-github-pat-token
+#
+# =============================================================================
+
+dags:
+  persistence:
+    enabled: true
+    size: 5Gi
+    accessMode: ReadWriteOnce
+    # Uncomment and set if your cluster requires specific storage class
+    # storageClass: "default"
+  gitSync:
+    enabled: true
+    # GitHub/GitLab/Azure DevOps repository URL
+    repo: "https://github.com/jniranjanreddy/airflow-dags.git"
+    # Branch to sync
+    branch: "main"
+    # Subfolder in repo containing DAGs (use "" if DAGs are at root)
+    subPath: "dags"
+    # Sync interval in seconds
+    wait: 60
+    # Secret containing credentials (created in prerequisites)
+    credentialsSecret: git-credentials
+
