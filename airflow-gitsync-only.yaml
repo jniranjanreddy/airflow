@@ -1,39 +1,32 @@
 # =============================================================================
-# Git Sync ONLY - For Existing Airflow Clusters
-# =============================================================================
-# This file ONLY adds Git Sync to an existing Airflow deployment.
-# It does NOT change any other settings (PostgreSQL, resources, etc.)
-#
-# Usage:
-#   helm upgrade airflow apache-airflow/airflow -n airflow -f airflow-gitsync-only.yaml
-#
-# Prerequisites:
-#   1. Create git credentials secret first:
-#      kubectl create secret generic git-credentials -n airflow \
-#        --from-literal=GITSYNC_USERNAME=your-username \
-#        --from-literal=GITSYNC_PASSWORD=your-github-pat-token \
-#        --from-literal=GIT_SYNC_USERNAME=your-username \
-#        --from-literal=GIT_SYNC_PASSWORD=your-github-pat-token
-#
+# Git Sync Configuration for Airflow DAGs
+# Merge with main values: helm upgrade airflow apache-airflow/airflow -n airflow -f airflow-values.yaml -f airflow-gitsync-values.yaml
 # =============================================================================
 
 dags:
   persistence:
-    enabled: true
-    size: 5Gi
-    accessMode: ReadWriteOnce
-    # Uncomment and set if your cluster requires specific storage class
-    storageClass: "default"
+    enabled: false
   gitSync:
     enabled: true
-    # GitHub/GitLab/Azure DevOps repository URL
     repo: "https://github.com/jniranjanreddy/airflow-dags.git"
-    # Branch to sync
     branch: "main"
-    # Subfolder in repo containing DAGs (use "" if DAGs are at root)
     subPath: "dags"
-    # Sync interval in seconds
     wait: 60
-    # Secret containing credentials (created in prerequisites)
+    # Credentials for private repository
     credentialsSecret: git-credentials
+
+# =============================================================================
+# For Private Git Repositories
+# =============================================================================
+# Create a secret with your credentials first:
+#
+# Option 1: Username/Password or Token
+# kubectl create secret generic git-credentials -n airflow \
+#   --from-literal=GIT_SYNC_USERNAME=your-username \
+#   --from-literal=GIT_SYNC_PASSWORD=your-token
+#
+# Option 2: SSH Key
+# kubectl create secret generic airflow-ssh-secret -n airflow \
+#   --from-file=gitSshKey=/path/to/your/private-key
+# =============================================================================
 
