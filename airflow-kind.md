@@ -3,18 +3,24 @@
 helm repo add apache-airflow https://airflow.apache.org
 helm repo update
 
-helm install airflow apache-airflow/airflow \
-  --namespace airflow \
-  --create-namespace \
-  --values configs/airflow-values-kind.yaml \
-  --timeout 20m \
-  --wait
+kubectl create namespace airflow
 
-kubectl apply -f manual-migration-job.yaml
-kubectl logs -f job/airflow-manual-migration -n airflow
+kubectl create secret generic git-credentials -n airflow \
+  --from-literal=GITSYNC_USERNAME=your-username \
+  --from-literal=GITSYNC_PASSWORD=your-github-pat-token \
+  --from-literal=GIT_SYNC_USERNAME=your-username \
+  --from-literal=GIT_SYNC_PASSWORD=your-github-pat-token
 
+helm install airflow apache-airflow/airflow -n airflow \
+  -f airflow-values.yaml \
+  -f airflow-gitsync.yaml
 
+kubectl get pods -n airflow
 
+SCHEDULER_POD=$(kubectl get pods -n airflow -l component=scheduler -o jsonpath='{.items[0].metadata.name}')
+kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- \
+  airflow users create --username admin --password admin123 \
+  --firstname Admin --lastname User --role Admin --email admin@example.com
 
 
 
