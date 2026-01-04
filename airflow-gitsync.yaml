@@ -1,0 +1,32 @@
+# =============================================================================
+# Git Sync Configuration for Airflow DAGs
+# Merge with main values: helm upgrade airflow apache-airflow/airflow -n airflow -f airflow-values.yaml -f airflow-gitsync-values.yaml
+# =============================================================================
+
+dags:
+  persistence:
+    enabled: false
+  gitSync:
+    enabled: true
+    repo: "https://github.com/jniranjanreddy/airflow-dags.git"
+    branch: "main"
+    subPath: "dags"
+    wait: 60
+    # Credentials for private repository
+    credentialsSecret: git-credentials
+
+# =============================================================================
+# For Private Git Repositories
+# =============================================================================
+# Create a secret with your credentials first:
+#
+# Option 1: Username/Password or Token
+# kubectl create secret generic git-credentials -n airflow \
+#   --from-literal=GIT_SYNC_USERNAME=your-username \
+#   --from-literal=GIT_SYNC_PASSWORD=your-token
+#
+# Option 2: SSH Key
+# kubectl create secret generic airflow-ssh-secret -n airflow \
+#   --from-file=gitSshKey=/path/to/your/private-key
+# =============================================================================
+

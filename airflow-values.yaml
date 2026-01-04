@@ -1,0 +1,217 @@
+# Apache Airflow 3.x Helm Chart Values
+# Chart: apache-airflow/airflow (v1.18.0)
+
+# =============================================================================
+# AIRFLOW IMAGE
+# =============================================================================
+images:
+  airflow:
+    repository: apache/airflow
+    tag: 3.0.2
+    pullPolicy: IfNotPresent
+
+# =============================================================================
+# EXECUTOR
+# =============================================================================
+# Options: LocalExecutor, CeleryExecutor, KubernetesExecutor, CeleryKubernetesExecutor
+executor: "KubernetesExecutor"
+
+# =============================================================================
+# AIRFLOW CONFIGURATION
+# =============================================================================
+config:
+  core:
+    load_examples: "false"
+    dags_are_paused_at_creation: "true"
+  webserver:
+    expose_config: "true"
+    # Session timeout (30 minutes)
+    session_lifetime_minutes: "30"
+  api:
+    auth_backends: "airflow.api.auth.backend.basic_auth"
+  logging:
+    logging_level: "INFO"
+
+# =============================================================================
+# WEBSERVER
+# =============================================================================
+webserver:
+  replicas: 1
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+# =============================================================================
+# SCHEDULER
+# =============================================================================
+scheduler:
+  replicas: 1
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+# =============================================================================
+# TRIGGERER (for deferrable operators)
+# =============================================================================
+triggerer:
+  enabled: true
+  replicas: 1
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+# =============================================================================
+# DAG PROCESSOR
+# =============================================================================
+dagProcessor:
+  enabled: false  # Set to true if you want separate DAG processor
+
+# =============================================================================
+# WORKERS (only needed for CeleryExecutor)
+# =============================================================================
+workers:
+  replicas: 0  # Not needed for KubernetesExecutor
+
+# =============================================================================
+# REDIS (not needed for KubernetesExecutor)
+# =============================================================================
+redis:
+  enabled: false
+
+# =============================================================================
+# METADATA DATABASE CONNECTION
+# =============================================================================
+data:
+  metadataConnection:
+    user: airflow
+    pass: airflow123secure
+    protocol: postgresql
+    host: ~
+    port: 5432
+    db: airflow
+    sslmode: disable
+
+# =============================================================================
+# POSTGRESQL (metadata database)
+# =============================================================================
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "16.1.0-debian-11-r15"
+    pullPolicy: IfNotPresent
+  auth:
+    postgresPassword: "airflow123secure"
+    username: "airflow"
+    password: "airflow123secure"
+    database: "airflow"
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+
+# =============================================================================
+# DAGs CONFIGURATION
+# =============================================================================
+dags:
+  # Persistence disabled - use gitSync or mount DAGs differently
+  persistence:
+    enabled: false
+  
+  # Option 2: Git sync (uncomment to use)
+  # gitSync:
+  #   enabled: true
+  #   repo: "https://github.com/your-org/your-dags-repo.git"
+  #   branch: "main"
+  #   subPath: "dags"
+  #   wait: 60
+
+# =============================================================================
+# LOGS
+# =============================================================================
+logs:
+  persistence:
+    enabled: false
+
+# =============================================================================
+# KUBERNETES EXECUTOR CONFIGURATION
+# =============================================================================
+# Pod template for tasks run by KubernetesExecutor
+# Uncomment and customize as needed
+# extraEnvFrom: |
+#   - configMapRef:
+#       name: airflow-env-config
+
+# =============================================================================
+# INGRESS (uncomment to expose externally)
+# =============================================================================
+# ingress:
+#   enabled: true
+#   web:
+#     enabled: true
+#     hosts:
+#       - name: airflow.your-domain.com
+#         path: "/"
+#     ingressClassName: nginx
+#     # tls:
+#     #   enabled: true
+#     #   secretName: airflow-tls
+
+# =============================================================================
+# SERVICE ACCOUNT
+# =============================================================================
+serviceAccount:
+  create: true
+  name: "airflow"
+
+# =============================================================================
+# RBAC
+# =============================================================================
+rbac:
+  create: true
+
+# =============================================================================
+# SECURITY CONTEXT
+# =============================================================================
+securityContexts:
+  pod:
+    runAsUser: 50000
+    fsGroup: 0
+  containers:
+    runAsUser: 50000
+    allowPrivilegeEscalation: false
+
+# =============================================================================
+# WEBSERVER SECRET KEY (for session encryption)
+# =============================================================================
+# Generate with: python3 -c "import secrets; print(secrets.token_hex(32))"
+webserverSecretKey: "h1&v%chQKdlqXBI"
+
+# =============================================================================
+# ENVIRONMENT VARIABLES
+# =============================================================================
+env: []
+# - name: "AIRFLOW__CORE__FERNET_KEY"
+#   value: "your-fernet-key"
+
+# =============================================================================
+# EXTRA SECRETS
+# =============================================================================
+extraSecrets: {}
+# airflow-connections:
+#   data: |
+#     AIRFLOW_CONN_MY_DATABASE: 'postgresql://user:pass@host:5432/db'
+
