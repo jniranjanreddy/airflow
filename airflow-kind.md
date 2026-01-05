@@ -40,3 +40,21 @@ kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- airflow dags reserial
 # List DAGs
 kubectl exec -it $SCHEDULER_POD -n airflow -c scheduler -- airflow dags list
 ```
+## How to update python Modules..
+```
+1. Create Dockerfile (in the same folder as requirements.txt):
+FROM apache/airflow:3.0.2# Copy requirements fileCOPY requirements.txt /requirements.txt# Install packagesRUN pip install --no-cache-dir -r /requirements.txt
+
+2. Build & Load into KIND:
+# Build the imagedocker build -t airflow-custom:3.0.2 .# Load into KIND clusterkind load docker-image airflow-custom:3.0.2 --name airflow
+3. Update airflow-values.yaml - change this section:
+images:  airflow:    repository: airflow-custom    tag: 3.0.2    pullPolicy: IfNotPresent
+4. Upgrade Airflow:
+helm upgrade airflow apache-airflow/airflow -n airflow \  -f airflow-values.yaml \  -f airflow-gitsync-values.yaml
+For AKS/Production - push to a container registry:
+# Tag for your registrydocker tag airflow-custom:3.0.2 your-acr.azurecr.io/airflow-custom:3.0.2# Pushdocker push your-acr.azurecr.io/airflow-custom:3.0.2
+Then update values:
+images:  airflow:    repository: your-acr.azurecr.io/airflow-custom    tag: 3.0.2
+
+
+```
