@@ -55,6 +55,13 @@ For AKS/Production - push to a container registry:
 # Tag for your registrydocker tag airflow-custom:3.0.2 your-acr.azurecr.io/airflow-custom:3.0.2# Pushdocker push your-acr.azurecr.io/airflow-custom:3.0.2
 Then update values:
 images:  airflow:    repository: your-acr.azurecr.io/airflow-custom    tag: 3.0.2
-
+```
+## adding acr to AKS
+```
+# Attach ACR to AKS (if not already done)
+az aks update -n <aks-cluster-name> -g <resource-group> --attach-acr <your-acr-name>
+az aks show -n uat-aks -g uat-k8s-resources --query "identityProfile" -o table
+# Check if AKS has AcrPull role on ACR
+az role assignment list --scope /subscriptions/<sub-id>/resourceGroups/uat-rg/providers/Microsoft.ContainerRegistry/registries/uatacr --query "[?roleDefinitionName=='AcrPull']" -o table
 
 ```
